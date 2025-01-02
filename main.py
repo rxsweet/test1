@@ -68,7 +68,7 @@ def send_post_request(url, data, headers=None):
 
 def send_post_json_request(url, data, headers=None):
     global response
-    response = requests.post(url, data=data, headers=headers, proxies={"http": proxy, "https": proxy})
+    response = requests.post(url, data=data, headers=headers)
     return response
 
 
@@ -401,7 +401,6 @@ def main():
                 file.write(airport_link_info)
         # 邮箱退出登录
         num += 1
-        mail.logout()
 
 
 if __name__ == "__main__":
