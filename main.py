@@ -146,7 +146,7 @@ def send_email_verify(origin, email_user):
 
 
 # 注册机场账号
-def register(origin, email_user, verify_code, , invite_code=None):
+def register(origin, email_user, verify_code, password, invite_code=None):
     header = HEADERS
     header['Content-Type'] = "application/x-www-form-urlencoded"
     header['Accept'] = "application/json, text/plain, */*"
