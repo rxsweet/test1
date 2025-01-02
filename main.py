@@ -349,32 +349,13 @@ def main():
         
         global invite_codes
         websites = read_websites(WEBSITES_FILE_PATH)
+        print('1111111')
         # 遍历机场
         for origin, email_verify, coupon_code in websites:
-            # 登录判断是否已经注册
-            login_res = login(origin, email_user, email_pass[:16])
-            global auth_data
-            if login_res is not None:
-                logger.info(f"{email_user}已经在{origin}注册！")
-                auth_data = login_res['auth_data']
-            else:
-                logger.info(f"{email_user}未在{origin}注册！")
-                verification_code = None
-                if email_verify == 't':
-                    # 有邮箱验证，则发送验证码到邮箱
-                    if send_email_verify(origin, email_user):
-                        logger.info(f"已向邮箱{email_user}发送验证码！")
-                        verification_code = outlook.get_verification_code(mail)
-                        if verification_code is None:
-                            logger.error(f"获取邮箱{email_user}验证码失败！")
-                            continue
-                        logger.info(f"Verification code for {email_user} is {verification_code}")
-                    else:
-                        continue
-                # 注册账号，获得授权码
-                auth_data = register(origin, email_user, verification_code, email_pass[:16], invite_codes.get(origin))
-                if auth_data is None:
-                    continue
+
+            auth_data = register(origin, email_user, verification_code, email_pass[:16], invite_codes.get(origin))
+            if auth_data is None:
+                continue
 
             # 判断是否有优惠码
             if coupon_code is not None and coupon_code != "":
