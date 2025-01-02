@@ -161,7 +161,9 @@ def register(origin, email_user, verify_code, password, invite_code=None):
         if invite_code is not None and invite_code != '':
             data['invite_code'] = invite_code
             logger.info(f"{email_user}使用邀请码{invite_code}注册！")
+        print('2222222222222222222222222222')
         response = send_post_json_request(url, data, header)
+        print('333333333333333333333333333333')
         if response.status_code == 200:
             obj = json.loads(response.text)
             logger.info(f"{email_user}注册成功!")
@@ -170,7 +172,7 @@ def register(origin, email_user, verify_code, password, invite_code=None):
             logger.error(f"{email_user}注册失败:{response.json()['message']}")
             return None
     except Exception as e:
-        logger.error(f"{email_user}注册错误:{e},返回信息：{response.text}")
+        logger.error(f"{email_user}注册错误:{e},返回信息：{response}")
         return None
 
 
