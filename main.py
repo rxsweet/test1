@@ -407,7 +407,7 @@ def main():
                         invite_codes[origin] = invite_code
             # 获取订阅地址
             subscribe_url = get_subscribe(origin, email_user, auth_data)
-
+            print('subscribe_url= ' + subscribe_url)
             if num == 1:
                 airport_link_info = (
                             f"账号：{email_user}" + f"\n密码：{email_pass[:16]}" + f"\n订阅地址：{subscribe_url}\n" +
@@ -420,7 +420,8 @@ def main():
                 file.write(airport_link_info)
         # 邮箱退出登录
         num += 1
-        mail.logout()
+        
+        #mail.logout()
 
 
 if __name__ == "__main__":
