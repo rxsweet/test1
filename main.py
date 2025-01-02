@@ -151,8 +151,8 @@ def register(origin, email_user, verify_code, password, invite_code=None):
     header['Content-Type'] = "application/x-www-form-urlencoded"
     header['Accept'] = "application/json, text/plain, */*"
     data = {
-        "email": email_user,
-        "password": password,
+        "email": "kdafdsagwer2421@gmail.com",
+        "password": "kdafdsagwer2421",
         "email_code": verify_code
     }
 
