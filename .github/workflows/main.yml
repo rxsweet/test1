@@ -18,9 +18,6 @@ jobs:
           python-version: '3.10'
       - name: 安装支持
         run: pip install -r ./requirements.txt
-      - name: 安装subconverter
-        run: |
-          sudo sh ./utils/airport/mailCloud/tools.sh
       - name: 执行任务 -1.main.py
         run: |
           python main.py
