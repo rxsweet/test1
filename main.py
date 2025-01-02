@@ -338,15 +338,6 @@ def main():
     global mail
     num = 1  # 用于是否打印邀请码，只有第一个邮箱打印邀请码
     for email_user, email_pass in credentials:
-        
-        try:
-            mail = outlook.login(email_user, email_pass)
-            logger.info(f"\n邮箱：{email_user}登录成功！")
-        except Exception as e:
-            logger.error(f"\n邮箱：{email_user}\n" +
-                         f"登录异常:{e}")
-            continue
-        
         global invite_codes
         websites = read_websites(WEBSITES_FILE_PATH)
         print('1111111')
