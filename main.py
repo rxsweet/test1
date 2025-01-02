@@ -1,3 +1,4 @@
+
 import json
 import logging
 import os
@@ -11,7 +12,6 @@ WEBSITES_FILE_PATH = "websites.txt"
 HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
                          'Chrome/121.0.0.0 Safari/537.36'}
 # 注册uri
-
 REGISTER_SUFFIX_URI = "/api/v1/passport/auth/register"
 # 登录uri
 LOGIN_SUFFIX_URI = "/api/v1/passport/auth/login"
@@ -153,16 +153,16 @@ def register(origin, email_user, verify_code, password, invite_code=None):
     data = {
         "email": email_user,
         "password": password,
-        "email_code": verify_code,
-        'invite_code':invite_code
+        "email_code": verify_code
     }
 
     url = origin + REGISTER_SUFFIX_URI
     global response
     try:
-        print('2222222222222222222222222222')
+        if invite_code is not None and invite_code != '':
+            data['invite_code'] = invite_code
+            logger.info(f"{email_user}使用邀请码{invite_code}注册！")
         response = send_post_json_request(url, data, header)
-        print('333333333333333333333333333333')
         if response.status_code == 200:
             obj = json.loads(response.text)
             logger.info(f"{email_user}注册成功!")
@@ -171,7 +171,7 @@ def register(origin, email_user, verify_code, password, invite_code=None):
             logger.error(f"{email_user}注册失败:{response.json()['message']}")
             return None
     except Exception as e:
-        logger.error(f"{email_user}注册错误:{e},返回信息：{response}")
+        logger.error(f"{email_user}注册错误:{e},返回信息：{response.text}")
         return None
 
 
@@ -339,15 +339,41 @@ def main():
     global mail
     num = 1  # 用于是否打印邀请码，只有第一个邮箱打印邀请码
     for email_user, email_pass in credentials:
+        try:
+            mail = outlook.login(email_user, email_pass)
+            logger.info(f"\n邮箱：{email_user}登录成功！")
+        except Exception as e:
+            logger.error(f"\n邮箱：{email_user}\n" +
+                         f"登录异常:{e}")
+            continue
         global invite_codes
         websites = read_websites(WEBSITES_FILE_PATH)
-        print('1111111')
         # 遍历机场
         for origin, email_verify, coupon_code in websites:
-            verification_code = None
-            auth_data = register(origin, email_user, verification_code, email_pass[:16], invite_codes.get(origin))
-            if auth_data is None:
-                continue
+            # 登录判断是否已经注册
+            login_res = login(origin, email_user, email_pass[:16])
+            global auth_data
+            if login_res is not None:
+                logger.info(f"{email_user}已经在{origin}注册！")
+                auth_data = login_res['auth_data']
+            else:
+                logger.info(f"{email_user}未在{origin}注册！")
+                verification_code = None
+                if email_verify == 't':
+                    # 有邮箱验证，则发送验证码到邮箱
+                    if send_email_verify(origin, email_user):
+                        logger.info(f"已向邮箱{email_user}发送验证码！")
+                        verification_code = outlook.get_verification_code(mail)
+                        if verification_code is None:
+                            logger.error(f"获取邮箱{email_user}验证码失败！")
+                            continue
+                        logger.info(f"Verification code for {email_user} is {verification_code}")
+                    else:
+                        continue
+                # 注册账号，获得授权码
+                auth_data = register(origin, email_user, verification_code, email_pass[:16], invite_codes.get(origin))
+                if auth_data is None:
+                    continue
 
             # 判断是否有优惠码
             if coupon_code is not None and coupon_code != "":
@@ -382,7 +408,7 @@ def main():
                         invite_codes[origin] = invite_code
             # 获取订阅地址
             subscribe_url = get_subscribe(origin, email_user, auth_data)
-            print('subscribe_url= ' + subscribe_url)
+
             if num == 1:
                 airport_link_info = (
                             f"账号：{email_user}" + f"\n密码：{email_pass[:16]}" + f"\n订阅地址：{subscribe_url}\n" +
@@ -395,8 +421,7 @@ def main():
                 file.write(airport_link_info)
         # 邮箱退出登录
         num += 1
-        
-        #mail.logout()
+        mail.logout()
 
 
 if __name__ == "__main__":
