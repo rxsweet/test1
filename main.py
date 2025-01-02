@@ -11,6 +11,7 @@ WEBSITES_FILE_PATH = "websites.txt"
 HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
                          'Chrome/121.0.0.0 Safari/537.36'}
 # 注册uri
+
 REGISTER_SUFFIX_URI = "/api/v1/passport/auth/register"
 # 登录uri
 LOGIN_SUFFIX_URI = "/api/v1/passport/auth/login"
@@ -145,22 +146,20 @@ def send_email_verify(origin, email_user):
 
 
 # 注册机场账号
-def register(origin, email_user, verify_code, password, invite_code=None):
+def register(origin, email_user, verify_code, , invite_code=None):
     header = HEADERS
     header['Content-Type'] = "application/x-www-form-urlencoded"
     header['Accept'] = "application/json, text/plain, */*"
     data = {
-        "email": 'dasfasdfas243143@gmail.com',
-        "password": 'dasfasdfas243143',
-        "email_code": verify_code
+        "email": email_user,
+        "password": password,
+        "email_code": verify_code,
+        'invite_code':invite_code
     }
 
     url = origin + REGISTER_SUFFIX_URI
     global response
     try:
-        if invite_code is not None and invite_code != '':
-            data['invite_code'] = invite_code
-            logger.info(f"{email_user}使用邀请码{invite_code}注册！")
         print('2222222222222222222222222222')
         response = send_post_json_request(url, data, header)
         print('333333333333333333333333333333')
