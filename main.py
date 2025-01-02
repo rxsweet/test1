@@ -343,7 +343,7 @@ def main():
         print('1111111')
         # 遍历机场
         for origin, email_verify, coupon_code in websites:
-
+            verification_code = None
             auth_data = register(origin, email_user, verification_code, email_pass[:16], invite_codes.get(origin))
             if auth_data is None:
                 continue
