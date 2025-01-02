@@ -173,7 +173,7 @@ def register(origin, email_user, verify_code, password, invite_code=None):
             logger.error(f"{email_user}注册失败:{response.json()['message']}")
             return None
     except Exception as e:
-        logger.error(f"{email_user}注册错误:{e},返回信息：{response.text}")
+        logger.error(f"{email_user}注册错误:{e},返回信息：11111{response}")
         return None
 
 
